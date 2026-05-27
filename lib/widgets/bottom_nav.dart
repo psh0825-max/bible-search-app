@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import '../config/constants.dart';
 
+/// 부드러운 하단 탭 — 활성 시 코랄 톤 pill이 아이콘 뒤에 떠오름.
 class BottomNav extends StatelessWidget {
   final int currentIndex;
   final ValueChanged<int> onTap;
@@ -20,17 +21,17 @@ class BottomNav extends StatelessWidget {
         activeIcon: Icons.menu_book,
         label: '성경'),
     _NavItem(
-        icon: Icons.check_circle_outline,
-        activeIcon: Icons.check_circle,
+        icon: Icons.bar_chart_outlined,
+        activeIcon: Icons.bar_chart,
         label: '진도'),
     _NavItem(
-        icon: Icons.star_border,
-        activeIcon: Icons.star,
+        icon: Icons.bookmark_border,
+        activeIcon: Icons.bookmark,
         label: '저장'),
     _NavItem(
-        icon: Icons.more_horiz,
-        activeIcon: Icons.more_horiz,
-        label: '더보기'),
+        icon: Icons.tune,
+        activeIcon: Icons.tune,
+        label: '설정'),
   ];
 
   @override
@@ -39,11 +40,11 @@ class BottomNav extends StatelessWidget {
 
     return ClipRRect(
       child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+        filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
         child: Container(
           padding: EdgeInsets.only(bottom: bottomPadding),
           decoration: BoxDecoration(
-            color: AppConstants.bgPrimary.withOpacity(0.85),
+            color: AppConstants.bgPrimary.withOpacity(0.88),
             border: const Border(
               top: BorderSide(
                 color: AppConstants.border,
@@ -54,7 +55,7 @@ class BottomNav extends StatelessWidget {
           child: SafeArea(
             top: false,
             child: SizedBox(
-              height: 60,
+              height: 62,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: List.generate(_items.length, (index) {
@@ -70,46 +71,38 @@ class BottomNav extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           AnimatedContainer(
-                            duration: const Duration(milliseconds: 250),
+                            duration: const Duration(milliseconds: 220),
+                            curve: Curves.easeOut,
                             padding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 4,
+                              horizontal: 14,
+                              vertical: 5,
                             ),
                             decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(16),
+                              borderRadius: BorderRadius.circular(999),
                               color: isSelected
                                   ? AppConstants.accentSoft
                                   : Colors.transparent,
-                              boxShadow: isSelected
-                                  ? [
-                                      BoxShadow(
-                                        color: AppConstants.accent
-                                            .withOpacity(0.3),
-                                        blurRadius: 8,
-                                        spreadRadius: 0,
-                                      ),
-                                    ]
-                                  : null,
                             ),
                             child: Icon(
                               isSelected ? item.activeIcon : item.icon,
                               color: isSelected
                                   ? AppConstants.accentBright
                                   : AppConstants.textDim,
-                              size: 22,
+                              size: 21,
                             ),
                           ),
-                          const SizedBox(height: 2),
+                          const SizedBox(height: 3),
                           Text(
                             item.label,
                             style: TextStyle(
                               color: isSelected
                                   ? AppConstants.accentBright
                                   : AppConstants.textDim,
-                              fontSize: 11,
+                              fontSize: 10.5,
+                              letterSpacing: -0.1,
                               fontWeight: isSelected
                                   ? FontWeight.w600
-                                  : FontWeight.w400,
+                                  : FontWeight.w500,
                             ),
                           ),
                         ],

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../config/constants.dart';
 
+/// 감정 칩 — 부드러운 pill, 활성 시 코랄 fill. 안 누른 상태에서도 또렷.
 class MoodChip extends StatefulWidget {
   final String emoji;
   final String label;
@@ -19,54 +20,47 @@ class MoodChip extends StatefulWidget {
   State<MoodChip> createState() => _MoodChipState();
 }
 
-class _MoodChipState extends State<MoodChip>
-    with SingleTickerProviderStateMixin {
+class _MoodChipState extends State<MoodChip> {
   bool _pressed = false;
 
   @override
   Widget build(BuildContext context) {
+    final active = widget.isSelected || _pressed;
     return GestureDetector(
       onTapDown: (_) => setState(() => _pressed = true),
       onTapUp: (_) => setState(() => _pressed = false),
       onTapCancel: () => setState(() => _pressed = false),
       onTap: widget.onTap,
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+        duration: const Duration(milliseconds: 180),
+        curve: Curves.easeOut,
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
-          color: widget.isSelected || _pressed
-              ? AppConstants.accent.withOpacity(0.3)
-              : AppConstants.bgCard.withOpacity(0.6),
+          borderRadius: BorderRadius.circular(999),
+          color: active
+              ? AppConstants.accentSoft
+              : AppConstants.bgCard.withOpacity(0.85),
           border: Border.all(
-            color: widget.isSelected || _pressed
-                ? AppConstants.accent.withOpacity(0.6)
+            color: active
+                ? AppConstants.accent.withOpacity(0.7)
                 : AppConstants.border,
+            width: 0.7,
           ),
-          boxShadow: widget.isSelected || _pressed
-              ? [
-                  BoxShadow(
-                    color: AppConstants.accent.withOpacity(0.2),
-                    blurRadius: 8,
-                    spreadRadius: 1,
-                  ),
-                ]
-              : null,
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(widget.emoji, style: const TextStyle(fontSize: 14)),
-            const SizedBox(width: 4),
+            const SizedBox(width: 7),
             Text(
               widget.label,
               style: TextStyle(
-                color: widget.isSelected
+                color: active
                     ? AppConstants.accentBright
                     : AppConstants.textSecondary,
                 fontSize: 13,
-                fontWeight:
-                    widget.isSelected ? FontWeight.w600 : FontWeight.w400,
+                fontWeight: active ? FontWeight.w600 : FontWeight.w500,
+                letterSpacing: -0.1,
               ),
             ),
           ],

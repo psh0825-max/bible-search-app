@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../config/constants.dart';
+import '../config/theme.dart';
 import '../models/bible_book.dart';
 import '../providers/bible_provider.dart';
 import '../providers/settings_provider.dart';
 import '../services/tts_service.dart';
-import '../widgets/glass_card.dart';
 
 class ReadingScreen extends ConsumerStatefulWidget {
   const ReadingScreen({super.key});
@@ -59,13 +59,7 @@ class _ReadingScreenState extends ConsumerState<ReadingScreen> {
     final bottomPadding = MediaQuery.of(context).padding.bottom + 80;
 
     return Container(
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [Color(0xFF1A0640), AppConstants.bgPrimary],
-        ),
-      ),
+      decoration: kAppBackground,
       child: SafeArea(
         bottom: false,
         child: Column(
@@ -73,33 +67,59 @@ class _ReadingScreenState extends ConsumerState<ReadingScreen> {
           children: [
             // 헤더
             Padding(
-              padding: const EdgeInsets.fromLTRB(24, 20, 24, 16),
+              padding: const EdgeInsets.fromLTRB(20, 24, 20, 16),
               child: Row(
                 children: [
                   if (_selectedBook != null)
                     GestureDetector(
                       onTap: _goBack,
                       child: Container(
-                        margin: const EdgeInsets.only(right: 12),
-                        padding: const EdgeInsets.all(8),
+                        margin: const EdgeInsets.only(right: 10),
+                        width: 38,
+                        height: 38,
                         decoration: BoxDecoration(
-                          color: AppConstants.accentSoft,
+                          color: AppConstants.bgCard.withOpacity(0.7),
                           borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: AppConstants.border,
+                            width: 0.6,
+                          ),
                         ),
                         child: const Icon(
                           Icons.arrow_back_ios_new,
-                          color: AppConstants.accentBright,
-                          size: 18,
+                          color: AppConstants.textSecondary,
+                          size: 15,
                         ),
                       ),
                     ),
                   Expanded(
-                    child: Text(
-                      _getTitle(),
-                      style: Theme.of(context).textTheme.headlineMedium,
+                    child: Padding(
+                      padding: EdgeInsets.only(left: _selectedBook != null ? 0 : 4),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          if (_selectedBook == null) ...[
+                            Text(
+                              '성경 읽기',
+                              style: Theme.of(context).textTheme.headlineLarge,
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              '한 장씩 천천히, 마음 가는 대로.',
+                              style:
+                                  Theme.of(context).textTheme.bodyMedium,
+                            ),
+                          ] else
+                            Text(
+                              _getTitle(),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .headlineMedium,
+                            ),
+                        ],
+                      ),
                     ),
                   ),
-                  // TTS & 글씨 크기
                   if (_selectedChapter != null) ...[
                     _buildTtsButton(),
                     const SizedBox(width: 8),
@@ -109,10 +129,10 @@ class _ReadingScreenState extends ConsumerState<ReadingScreen> {
               ),
             ),
 
-            // 구약/신약 탭 (책 목록일 때만)
+            // 구약/신약 탭
             if (_selectedBook == null)
               Padding(
-                padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
+                padding: const EdgeInsets.fromLTRB(20, 4, 20, 18),
                 child: _buildTestamentTabs(),
               ),
 
@@ -137,7 +157,7 @@ class _ReadingScreenState extends ConsumerState<ReadingScreen> {
     if (_selectedBook != null) {
       return _selectedBook!.name;
     }
-    return '📖 성경 읽기';
+    return '성경 읽기';
   }
 
   // === 구약/신약 탭 ===
@@ -148,9 +168,9 @@ class _ReadingScreenState extends ConsumerState<ReadingScreen> {
 
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.05),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.white.withOpacity(0.1)),
+        color: AppConstants.bgCard.withOpacity(0.7),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: AppConstants.border, width: 0.6),
       ),
       padding: const EdgeInsets.all(4),
       child: Row(
@@ -167,13 +187,17 @@ class _ReadingScreenState extends ConsumerState<ReadingScreen> {
     return Expanded(
       child: GestureDetector(
         onTap: () => setState(() => _testamentTab = index),
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 10),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 180),
+          padding: const EdgeInsets.symmetric(vertical: 11),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(11),
             gradient: isSelected
                 ? const LinearGradient(
-                    colors: [Color(0xFF7c3aed), Color(0xFF6d28d9)],
+                    colors: [
+                      AppConstants.accent,
+                      AppConstants.accentDeep,
+                    ],
                   )
                 : null,
           ),
@@ -181,9 +205,12 @@ class _ReadingScreenState extends ConsumerState<ReadingScreen> {
             label,
             textAlign: TextAlign.center,
             style: TextStyle(
-              color: isSelected ? Colors.white : AppConstants.textDim,
-              fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-              fontSize: 14,
+              color: isSelected
+                  ? AppConstants.onAccent
+                  : AppConstants.textSecondary,
+              fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+              fontSize: 13.5,
+              letterSpacing: -0.1,
             ),
           ),
         ),
@@ -213,28 +240,31 @@ class _ReadingScreenState extends ConsumerState<ReadingScreen> {
           onTap: () => _selectBook(book),
           child: Container(
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.05),
-              borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: Colors.white.withOpacity(0.1)),
+              color: AppConstants.bgCard.withOpacity(0.7),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: AppConstants.border,
+                width: 0.6,
+              ),
             ),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
                   book.name,
-                  style: const TextStyle(
+                  style: AppTheme.scriptureText(
+                    size: 15,
+                    weight: FontWeight.w600,
                     color: AppConstants.textPrimary,
-                    fontWeight: FontWeight.w700,
-                    fontSize: 14,
                   ),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 4),
                 Text(
                   '${book.chapterCount}장',
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: AppConstants.textDim,
-                    fontSize: 12,
+                    fontSize: 11.5,
                   ),
                 ),
               ],
@@ -258,16 +288,15 @@ class _ReadingScreenState extends ConsumerState<ReadingScreen> {
 
     return Column(
       children: [
-        // 이 책의 진도
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
+          padding: const EdgeInsets.symmetric(horizontal: 24),
           child: Row(
             children: [
               Text(
-                '$readCount/$chapterCount장 읽음',
+                '$readCount / $chapterCount장 읽음',
                 style: TextStyle(
                   color: readCount == chapterCount
-                      ? Colors.greenAccent
+                      ? AppConstants.success
                       : AppConstants.textSecondary,
                   fontSize: 13,
                   fontWeight: FontWeight.w500,
@@ -275,9 +304,9 @@ class _ReadingScreenState extends ConsumerState<ReadingScreen> {
               ),
               if (readCount == chapterCount)
                 const Padding(
-                  padding: EdgeInsets.only(left: 4),
+                  padding: EdgeInsets.only(left: 6),
                   child: Icon(Icons.check_circle,
-                      color: Colors.greenAccent, size: 14),
+                      color: AppConstants.success, size: 14),
                 ),
             ],
           ),
@@ -303,39 +332,28 @@ class _ReadingScreenState extends ConsumerState<ReadingScreen> {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(12),
                     color: isRead
-                        ? AppConstants.accent.withOpacity(0.3)
-                        : AppConstants.bgCard.withOpacity(0.5),
+                        ? AppConstants.accentSoft
+                        : AppConstants.bgCard.withOpacity(0.65),
                     border: Border.all(
                       color: isRead
-                          ? Colors.greenAccent.withOpacity(0.5)
+                          ? AppConstants.accent.withOpacity(0.65)
                           : AppConstants.border,
+                      width: 0.6,
                     ),
                   ),
-                  child: Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      Text(
-                        '$chapter',
-                        style: TextStyle(
-                          color: isRead
-                              ? AppConstants.accentBright
-                              : AppConstants.textPrimary,
-                          fontWeight:
-                              isRead ? FontWeight.w700 : FontWeight.w400,
-                          fontSize: 16,
-                        ),
+                  child: Center(
+                    child: Text(
+                      '$chapter',
+                      style: TextStyle(
+                        color: isRead
+                            ? AppConstants.accentBright
+                            : AppConstants.textPrimary,
+                        fontWeight:
+                            isRead ? FontWeight.w700 : FontWeight.w500,
+                        fontSize: 15,
+                        fontFeatures: const [FontFeature.tabularFigures()],
                       ),
-                      if (isRead)
-                        const Positioned(
-                          top: 4,
-                          right: 4,
-                          child: Icon(
-                            Icons.check_circle,
-                            color: Colors.greenAccent,
-                            size: 12,
-                          ),
-                        ),
-                    ],
+                    ),
                   ),
                 ),
               );
@@ -346,7 +364,7 @@ class _ReadingScreenState extends ConsumerState<ReadingScreen> {
     );
   }
 
-  // === 구절 보기 (스와이프) ===
+  // === 구절 보기 ===
   Widget _buildVerseView(double bottomPadding) {
     final totalChapters = _selectedBook!.chapterCount;
 
@@ -370,12 +388,12 @@ class _ReadingScreenState extends ConsumerState<ReadingScreen> {
             final isRead = settings.readChapters.contains(chapterKey);
 
             return ListView.builder(
-              padding: EdgeInsets.fromLTRB(24, 0, 24, bottomPadding),
+              padding: EdgeInsets.fromLTRB(24, 4, 24, bottomPadding),
               itemCount: verses.length + 1,
               itemBuilder: (context, index) {
                 if (index == verses.length) {
                   return Padding(
-                    padding: const EdgeInsets.only(top: 24, bottom: 16),
+                    padding: const EdgeInsets.only(top: 28, bottom: 16),
                     child: Center(
                       child: GestureDetector(
                         onTap: () {
@@ -391,19 +409,33 @@ class _ReadingScreenState extends ConsumerState<ReadingScreen> {
                                     _selectedBook!.volume, chapter);
                           }
                         },
-                        child: Container(
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 220),
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 24, vertical: 14),
+                              horizontal: 22, vertical: 13),
                           decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(16),
-                            color: isRead
-                                ? Colors.greenAccent.withOpacity(0.15)
-                                : AppConstants.accent.withOpacity(0.15),
-                            border: Border.all(
-                              color: isRead
-                                  ? Colors.greenAccent.withOpacity(0.4)
-                                  : AppConstants.accent.withOpacity(0.4),
-                            ),
+                            borderRadius: BorderRadius.circular(999),
+                            gradient: isRead
+                                ? LinearGradient(colors: [
+                                    AppConstants.success.withOpacity(0.25),
+                                    AppConstants.success.withOpacity(0.18),
+                                  ])
+                                : const LinearGradient(
+                                    colors: [
+                                      AppConstants.accent,
+                                      AppConstants.accentDeep,
+                                    ],
+                                  ),
+                            boxShadow: isRead
+                                ? null
+                                : [
+                                    BoxShadow(
+                                      color: AppConstants.accent
+                                          .withOpacity(0.35),
+                                      blurRadius: 14,
+                                      offset: const Offset(0, 4),
+                                    ),
+                                  ],
                           ),
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
@@ -413,21 +445,22 @@ class _ReadingScreenState extends ConsumerState<ReadingScreen> {
                                     ? Icons.check_circle
                                     : Icons.check_circle_outline,
                                 color: isRead
-                                    ? Colors.greenAccent
-                                    : AppConstants.accentBright,
-                                size: 20,
+                                    ? AppConstants.success
+                                    : AppConstants.onAccent,
+                                size: 18,
                               ),
                               const SizedBox(width: 8),
                               Text(
                                 isRead
-                                    ? '이 장을 읽었습니다 ✅'
-                                    : '이 장을 읽음으로 표시',
+                                    ? '읽음 표시 완료'
+                                    : '이 장을 읽었어요',
                                 style: TextStyle(
                                   color: isRead
-                                      ? Colors.greenAccent
-                                      : AppConstants.accentBright,
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 14,
+                                      ? AppConstants.success
+                                      : AppConstants.onAccent,
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 13.5,
+                                  letterSpacing: -0.1,
                                 ),
                               ),
                             ],
@@ -439,28 +472,35 @@ class _ReadingScreenState extends ConsumerState<ReadingScreen> {
                 }
 
                 return Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
+                  padding: const EdgeInsets.only(bottom: 10),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       SizedBox(
-                        width: 32,
-                        child: Text(
-                          '${index + 1}',
-                          style: TextStyle(
-                            color: AppConstants.accentBright,
-                            fontSize: fontSize * 0.75,
-                            fontWeight: FontWeight.w700,
+                        width: 30,
+                        child: Padding(
+                          padding: const EdgeInsets.only(top: 4),
+                          child: Text(
+                            '${index + 1}',
+                            style: TextStyle(
+                              color: AppConstants.accent.withOpacity(0.9),
+                              fontSize: fontSize * 0.65,
+                              fontWeight: FontWeight.w700,
+                              fontFeatures: const [
+                                FontFeature.tabularFigures()
+                              ],
+                            ),
                           ),
                         ),
                       ),
                       Expanded(
                         child: Text(
                           verses[index],
-                          style: TextStyle(
+                          style: AppTheme.scriptureText(
+                            size: fontSize,
+                            weight: FontWeight.w400,
                             color: AppConstants.textPrimary,
-                            fontSize: fontSize,
-                            height: 1.8,
+                            height: 2.0,
                           ),
                         ),
                       ),
@@ -473,11 +513,12 @@ class _ReadingScreenState extends ConsumerState<ReadingScreen> {
           loading: () => const Center(
             child: CircularProgressIndicator(
               color: AppConstants.accent,
+              strokeWidth: 2,
             ),
           ),
           error: (err, _) => Center(
             child: Text(
-              '구절을 불러올 수 없습니다',
+              '말씀을 불러오지 못했어요',
               style: TextStyle(color: AppConstants.textDim),
             ),
           ),
@@ -488,59 +529,67 @@ class _ReadingScreenState extends ConsumerState<ReadingScreen> {
 
   // TTS 버튼
   Widget _buildTtsButton() {
+    final speaking = TtsService.isSpeaking;
     return GestureDetector(
       onTap: () async {
-        if (TtsService.isSpeaking) {
+        if (speaking) {
           await TtsService.stop();
           setState(() {});
           return;
         }
-
         final key = ChapterKey(_selectedBook!.volume, _selectedChapter!);
         final chapterAsync = ref.read(chapterProvider(key));
         final verses = chapterAsync.valueOrNull;
         if (verses == null || verses.isEmpty) return;
-
         final text = verses.asMap().entries.map((e) {
           return '${e.key + 1}절. ${e.value}';
         }).join('. ');
-
         await TtsService.speak(text);
         setState(() {});
       },
-      child: Container(
-        padding: const EdgeInsets.all(8),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 180),
+        width: 38,
+        height: 38,
         decoration: BoxDecoration(
-          color: TtsService.isSpeaking
+          color: speaking
               ? AppConstants.accent
-              : AppConstants.accentSoft,
+              : AppConstants.bgCard.withOpacity(0.7),
           borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: speaking ? AppConstants.accent : AppConstants.border,
+            width: 0.6,
+          ),
         ),
         child: Icon(
-          TtsService.isSpeaking ? Icons.stop : Icons.volume_up,
-          color: TtsService.isSpeaking
-              ? Colors.white
-              : AppConstants.accentBright,
-          size: 20,
+          speaking ? Icons.stop : Icons.volume_up_outlined,
+          color: speaking
+              ? AppConstants.onAccent
+              : AppConstants.textSecondary,
+          size: 18,
         ),
       ),
     );
   }
 
-  // 글씨 크기 버튼
   Widget _buildFontSizeButton() {
     return GestureDetector(
       onTap: () => _showFontSizeSlider(),
       child: Container(
-        padding: const EdgeInsets.all(8),
+        width: 38,
+        height: 38,
         decoration: BoxDecoration(
-          color: AppConstants.accentSoft,
+          color: AppConstants.bgCard.withOpacity(0.7),
           borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: AppConstants.border,
+            width: 0.6,
+          ),
         ),
         child: const Icon(
           Icons.text_fields,
-          color: AppConstants.accentBright,
-          size: 20,
+          color: AppConstants.textSecondary,
+          size: 17,
         ),
       ),
     );
@@ -551,26 +600,34 @@ class _ReadingScreenState extends ConsumerState<ReadingScreen> {
       context: context,
       backgroundColor: AppConstants.bgCard,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       builder: (context) {
         return Consumer(
           builder: (context, ref, _) {
             final fontSize = ref.watch(settingsProvider).fontSize;
             return Padding(
-              padding: const EdgeInsets.all(24),
+              padding: const EdgeInsets.fromLTRB(24, 16, 24, 30),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    '글씨 크기',
-                    style: TextStyle(
-                      color: AppConstants.textPrimary,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
+                  Center(
+                    child: Container(
+                      width: 40,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: AppConstants.textDim.withOpacity(0.4),
+                        borderRadius: BorderRadius.circular(2),
+                      ),
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 18),
+                  Text(
+                    '글씨 크기',
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                  const SizedBox(height: 8),
                   Row(
                     children: [
                       const Text('가',
@@ -582,8 +639,6 @@ class _ReadingScreenState extends ConsumerState<ReadingScreen> {
                           min: 12,
                           max: 28,
                           divisions: 16,
-                          activeColor: AppConstants.accent,
-                          inactiveColor: AppConstants.accentSoft,
                           label: '${fontSize.round()}',
                           onChanged: (v) => ref
                               .read(settingsProvider.notifier)
@@ -592,18 +647,19 @@ class _ReadingScreenState extends ConsumerState<ReadingScreen> {
                       ),
                       const Text('가',
                           style: TextStyle(
-                              color: AppConstants.textPrimary, fontSize: 24)),
+                              color: AppConstants.textPrimary,
+                              fontSize: 24)),
                     ],
                   ),
+                  const SizedBox(height: 8),
                   Text(
-                    '미리보기 텍스트입니다',
-                    style: TextStyle(
+                    '미리보기 — 사랑은 오래 참고 사랑은 온유하며',
+                    style: AppTheme.scriptureText(
+                      size: fontSize,
                       color: AppConstants.textPrimary,
-                      fontSize: fontSize,
-                      height: 1.8,
+                      height: 1.9,
                     ),
                   ),
-                  const SizedBox(height: 16),
                 ],
               ),
             );

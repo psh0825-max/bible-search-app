@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../config/constants.dart';
+import '../config/theme.dart';
 import '../providers/settings_provider.dart';
-import '../widgets/glass_card.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -14,46 +14,36 @@ class SettingsScreen extends ConsumerWidget {
     final bottomPadding = MediaQuery.of(context).padding.bottom + 80;
 
     return Container(
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [Color(0xFF1A0640), AppConstants.bgPrimary],
-        ),
-      ),
+      decoration: kAppBackground,
       child: SafeArea(
         bottom: false,
         child: ListView(
-          padding: EdgeInsets.fromLTRB(20, 20, 20, bottomPadding),
+          padding: EdgeInsets.fromLTRB(20, 26, 20, bottomPadding),
           children: [
-            Text(
-              '⚙️ 설정',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-            const SizedBox(height: 24),
-
-            // 글씨 크기
-            GlassCard(
-              padding: const EdgeInsets.all(20),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 4),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Row(
-                    children: [
-                      Icon(Icons.text_fields,
-                          color: AppConstants.accentBright, size: 20),
-                      SizedBox(width: 10),
-                      Text(
-                        '글씨 크기',
-                        style: TextStyle(
-                          color: AppConstants.textPrimary,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 16,
-                        ),
-                      ),
-                    ],
+                  Text(
+                    '설정',
+                    style: Theme.of(context).textTheme.headlineLarge,
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 4),
+                  Text(
+                    '편안하게 읽을 수 있도록 맞춰보세요.',
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 22),
+
+            _SettingsSection(
+              icon: Icons.text_fields,
+              title: '글씨 크기',
+              child: Column(
+                children: [
                   Row(
                     children: [
                       const Text('가',
@@ -65,8 +55,6 @@ class SettingsScreen extends ConsumerWidget {
                           min: 12,
                           max: 28,
                           divisions: 16,
-                          activeColor: AppConstants.accent,
-                          inactiveColor: AppConstants.accentSoft,
                           label: '${settings.fontSize.round()}',
                           onChanged: (v) => ref
                               .read(settingsProvider.notifier)
@@ -75,15 +63,18 @@ class SettingsScreen extends ConsumerWidget {
                       ),
                       const Text('가',
                           style: TextStyle(
-                              color: AppConstants.textPrimary, fontSize: 24)),
+                              color: AppConstants.textPrimary,
+                              fontSize: 24)),
                     ],
                   ),
+                  const SizedBox(height: 6),
                   Center(
                     child: Text(
-                      '미리보기 텍스트',
-                      style: TextStyle(
+                      '미리보기 — 너희가 자유롭게 되리라',
+                      style: AppTheme.scriptureText(
+                        size: settings.fontSize,
                         color: AppConstants.textPrimary,
-                        fontSize: settings.fontSize,
+                        height: 1.9,
                       ),
                     ),
                   ),
@@ -93,45 +84,29 @@ class SettingsScreen extends ConsumerWidget {
 
             const SizedBox(height: 12),
 
-            // 읽기 진행률
-            GlassCard(
-              padding: const EdgeInsets.all(20),
+            _SettingsSection(
+              icon: Icons.auto_stories,
+              title: '읽기 진행률',
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Row(
-                    children: [
-                      Icon(Icons.auto_stories,
-                          color: AppConstants.accentBright, size: 20),
-                      SizedBox(width: 10),
-                      Text(
-                        '읽기 진행률',
-                        style: TextStyle(
-                          color: AppConstants.textPrimary,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 16,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
                   ClipRRect(
                     borderRadius: BorderRadius.circular(8),
                     child: LinearProgressIndicator(
                       value: settings.readingProgress,
-                      minHeight: 8,
+                      minHeight: 7,
                       backgroundColor: AppConstants.bgCardLight,
                       valueColor: const AlwaysStoppedAnimation<Color>(
                           AppConstants.accent),
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 10),
                   Text(
-                    '${settings.readChapters.length} / 1,189장 '
+                    '${settings.readChapters.length} / 1,189장  '
                     '(${(settings.readingProgress * 100).toStringAsFixed(1)}%)',
                     style: const TextStyle(
                       color: AppConstants.textSecondary,
-                      fontSize: 13,
+                      fontSize: 12.5,
                     ),
                   ),
                 ],
@@ -140,49 +115,22 @@ class SettingsScreen extends ConsumerWidget {
 
             const SizedBox(height: 12),
 
-            // TTS 설정
-            GlassCard(
-              padding: const EdgeInsets.all(20),
+            _SettingsSection(
+              icon: Icons.volume_up,
+              title: '음성',
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Row(
-                    children: [
-                      Icon(Icons.volume_up,
-                          color: AppConstants.accentBright, size: 20),
-                      SizedBox(width: 10),
-                      Text(
-                        'TTS 설정',
-                        style: TextStyle(
-                          color: AppConstants.textPrimary,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 16,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  const Text(
-                    '음성: Google Cloud TTS (Chirp 3 HD)',
-                    style: TextStyle(
-                      color: AppConstants.textSecondary,
-                      fontSize: 14,
-                    ),
-                  ),
+                  _kv('엔진', 'Google Cloud TTS (Chirp 3 HD)'),
                   const SizedBox(height: 4),
-                  const Text(
-                    '언어: 한국어 (ko-KR-Chirp3-HD-Leda)',
-                    style: TextStyle(
-                      color: AppConstants.textSecondary,
-                      fontSize: 14,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
+                  _kv('언어', '한국어 · ko-KR-Chirp3-HD-Leda'),
+                  const SizedBox(height: 10),
                   Text(
-                    '⚡ 오프라인 시 기본 TTS 엔진으로 자동 전환됩니다',
+                    '오프라인에서는 기기 기본 음성으로 자동 전환돼요.',
                     style: TextStyle(
-                      color: AppConstants.textDim.withOpacity(0.7),
+                      color: AppConstants.textDim.withOpacity(0.85),
                       fontSize: 12,
+                      height: 1.5,
                     ),
                   ),
                 ],
@@ -191,68 +139,114 @@ class SettingsScreen extends ConsumerWidget {
 
             const SizedBox(height: 24),
 
-            // 앱 정보
-            GlassCard(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                children: [
-                  const Text(
-                    '✨',
-                    style: TextStyle(fontSize: 40),
+            // 앱 정보 카드
+            DecoratedBox(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(22),
+                boxShadow: softShadow(opacity: 0.25),
+              ),
+              child: Container(
+                padding: const EdgeInsets.fromLTRB(22, 26, 22, 22),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(22),
+                  color: AppConstants.bgCard.withOpacity(0.85),
+                  border: Border.all(
+                    color: AppConstants.border,
+                    width: 0.6,
                   ),
-                  const SizedBox(height: 8),
-                  Text(
-                    AppConstants.appName,
-                    style: const TextStyle(
-                      color: AppConstants.textPrimary,
-                      fontWeight: FontWeight.w700,
-                      fontSize: 20,
+                  gradient: const LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      Color(0x1FF2A88F),
+                      Color(0x14B5A8E6),
+                    ],
+                  ),
+                ),
+                child: Column(
+                  children: [
+                    Container(
+                      width: 52,
+                      height: 52,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        gradient: const LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [
+                            AppConstants.accent,
+                            AppConstants.accentDeep,
+                          ],
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppConstants.accent.withOpacity(0.35),
+                            blurRadius: 16,
+                            offset: const Offset(0, 6),
+                          ),
+                        ],
+                      ),
+                      child: const Center(
+                        child: Text(
+                          '✦',
+                          style: TextStyle(
+                            color: AppConstants.onAccent,
+                            fontSize: 22,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 4),
-                  const Text(
-                    'AI 기반 성경 말씀 검색',
-                    style: TextStyle(
-                      color: AppConstants.textSecondary,
-                      fontSize: 14,
+                    const SizedBox(height: 14),
+                    Text(
+                      AppConstants.appName,
+                      style: Theme.of(context).textTheme.headlineSmall,
                     ),
-                  ),
-                  const SizedBox(height: 12),
-                  const Text(
-                    'v1.0.0',
-                    style: TextStyle(
-                      color: AppConstants.textDim,
-                      fontSize: 12,
+                    const SizedBox(height: 4),
+                    const Text(
+                      'AI가 마음에 맞는 말씀을 찾아드려요',
+                      style: TextStyle(
+                        color: AppConstants.textSecondary,
+                        fontSize: 13,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 4),
-                  const Text(
-                    AppConstants.copyright,
-                    style: TextStyle(
-                      color: AppConstants.textDim,
-                      fontSize: 12,
+                    const SizedBox(height: 14),
+                    Text(
+                      'v1.0.0',
+                      style: TextStyle(
+                        color: AppConstants.textDim.withOpacity(0.95),
+                        fontSize: 11.5,
+                      ),
                     ),
-                  ),
-                ],
+                    const SizedBox(height: 2),
+                    Text(
+                      AppConstants.copyright,
+                      style: TextStyle(
+                        color: AppConstants.textDim.withOpacity(0.7),
+                        fontSize: 11,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
 
-            const SizedBox(height: 12),
+            const SizedBox(height: 16),
 
             // 링크들
-            _buildLinkTile(
+            _LinkTile(
               icon: Icons.description_outlined,
               title: '이용약관',
               onTap: () => _launchUrl('https://lightonplus.com/terms'),
             ),
             const SizedBox(height: 8),
-            _buildLinkTile(
+            _LinkTile(
               icon: Icons.privacy_tip_outlined,
               title: '개인정보처리방침',
               onTap: () => _launchUrl('https://lightonplus.com/privacy'),
             ),
             const SizedBox(height: 8),
-            _buildLinkTile(
+            _LinkTile(
               icon: Icons.mail_outline,
               title: '문의하기',
               onTap: () => _launchUrl('mailto:support@lightonplus.com'),
@@ -263,36 +257,32 @@ class SettingsScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildLinkTile({
-    required IconData icon,
-    required String title,
-    required VoidCallback onTap,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: GlassCard(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        child: Row(
-          children: [
-            Icon(icon, color: AppConstants.textDim, size: 20),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                title,
-                style: const TextStyle(
-                  color: AppConstants.textPrimary,
-                  fontSize: 15,
-                ),
-              ),
-            ),
-            const Icon(
-              Icons.chevron_right,
+  static Widget _kv(String key, String value) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(
+          width: 50,
+          child: Text(
+            key,
+            style: const TextStyle(
               color: AppConstants.textDim,
-              size: 20,
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
             ),
-          ],
+          ),
         ),
-      ),
+        Expanded(
+          child: Text(
+            value,
+            style: const TextStyle(
+              color: AppConstants.textSecondary,
+              fontSize: 13,
+              height: 1.5,
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -301,5 +291,109 @@ class SettingsScreen extends ConsumerWidget {
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
     }
+  }
+}
+
+class _SettingsSection extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final Widget child;
+
+  const _SettingsSection({
+    required this.icon,
+    required this.title,
+    required this.child,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(20, 18, 20, 18),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(18),
+        color: AppConstants.bgCard.withOpacity(0.78),
+        border: Border.all(
+          color: AppConstants.border,
+          width: 0.6,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 28,
+                height: 28,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: AppConstants.accent.withOpacity(0.15),
+                ),
+                child: Icon(icon,
+                    color: AppConstants.accentBright, size: 14),
+              ),
+              const SizedBox(width: 10),
+              Text(
+                title,
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+            ],
+          ),
+          const SizedBox(height: 14),
+          child,
+        ],
+      ),
+    );
+  }
+}
+
+class _LinkTile extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final VoidCallback onTap;
+
+  const _LinkTile({
+    required this.icon,
+    required this.title,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          color: AppConstants.bgCard.withOpacity(0.65),
+          border: Border.all(
+            color: AppConstants.border,
+            width: 0.6,
+          ),
+        ),
+        child: Row(
+          children: [
+            Icon(icon, color: AppConstants.textSecondary, size: 17),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                title,
+                style: const TextStyle(
+                  color: AppConstants.textPrimary,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+            const Icon(
+              Icons.chevron_right,
+              color: AppConstants.textDim,
+              size: 18,
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

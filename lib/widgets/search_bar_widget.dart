@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import '../config/constants.dart';
 
+/// 단일 라인 검색바 — 부드러운 pill, 가벼운 hairline.
 class SearchBarWidget extends StatelessWidget {
   final TextEditingController controller;
   final String hintText;
@@ -25,22 +26,25 @@ class SearchBarWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ClipRRect(
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(999),
       child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+        filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
         child: Container(
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
-            color: Colors.white.withOpacity(0.05),
-            border: Border.all(color: AppConstants.border),
+            borderRadius: BorderRadius.circular(999),
+            color: AppConstants.bgCard.withOpacity(0.78),
+            border: Border.all(
+              color: AppConstants.border,
+              width: 0.6,
+            ),
           ),
           child: Row(
             children: [
-              const SizedBox(width: 16),
+              const SizedBox(width: 18),
               const Icon(
                 Icons.search,
                 color: AppConstants.textDim,
-                size: 20,
+                size: 19,
               ),
               const SizedBox(width: 10),
               Expanded(
@@ -53,11 +57,11 @@ class SearchBarWidget extends StatelessWidget {
                   decoration: InputDecoration(
                     hintText: hintText,
                     hintStyle: TextStyle(
-                      color: AppConstants.textDim.withOpacity(0.7),
+                      color: AppConstants.textDim.withOpacity(0.9),
                     ),
                     border: InputBorder.none,
                     contentPadding:
-                        const EdgeInsets.symmetric(vertical: 14),
+                        const EdgeInsets.symmetric(vertical: 16),
                   ),
                   onChanged: onChanged,
                   onSubmitted: onSubmitted,
@@ -68,11 +72,11 @@ class SearchBarWidget extends StatelessWidget {
                 GestureDetector(
                   onTap: onClear,
                   child: const Padding(
-                    padding: EdgeInsets.all(8),
+                    padding: EdgeInsets.all(10),
                     child: Icon(
                       Icons.close,
                       color: AppConstants.textDim,
-                      size: 20,
+                      size: 18,
                     ),
                   ),
                 ),
@@ -80,8 +84,8 @@ class SearchBarWidget extends StatelessWidget {
                 GestureDetector(
                   onTap: onMicTap,
                   child: Container(
-                    margin: const EdgeInsets.only(right: 4),
-                    padding: const EdgeInsets.all(8),
+                    margin: const EdgeInsets.only(right: 6),
+                    padding: const EdgeInsets.all(9),
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       color: isListening
@@ -91,13 +95,13 @@ class SearchBarWidget extends StatelessWidget {
                     child: Icon(
                       isListening ? Icons.mic : Icons.mic_none,
                       color: isListening
-                          ? Colors.white
+                          ? AppConstants.onAccent
                           : AppConstants.textDim,
-                      size: 20,
+                      size: 18,
                     ),
                   ),
                 ),
-              const SizedBox(width: 4),
+              const SizedBox(width: 6),
             ],
           ),
         ),
