@@ -6,6 +6,7 @@ import '../models/bible_book.dart';
 import '../providers/bible_provider.dart';
 import '../providers/settings_provider.dart';
 import '../services/tts_service.dart';
+import 'search_screen.dart';
 
 class ReadingScreen extends ConsumerStatefulWidget {
   const ReadingScreen({super.key});
@@ -124,7 +125,8 @@ class _ReadingScreenState extends ConsumerState<ReadingScreen> {
                     _buildTtsButton(),
                     const SizedBox(width: 8),
                     _buildFontSizeButton(),
-                  ],
+                  ] else if (_selectedBook == null)
+                    _buildKeywordSearchButton(),
                 ],
               ),
             ),
@@ -567,6 +569,33 @@ class _ReadingScreenState extends ConsumerState<ReadingScreen> {
               ? AppConstants.onAccent
               : AppConstants.textSecondary,
           size: 18,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildKeywordSearchButton() {
+    return GestureDetector(
+      onTap: () {
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (_) => const SearchScreen()),
+        );
+      },
+      child: Container(
+        width: 38,
+        height: 38,
+        decoration: BoxDecoration(
+          color: AppConstants.bgCard.withOpacity(0.7),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: AppConstants.border,
+            width: 0.6,
+          ),
+        ),
+        child: const Icon(
+          Icons.search,
+          color: AppConstants.textSecondary,
+          size: 17,
         ),
       ),
     );

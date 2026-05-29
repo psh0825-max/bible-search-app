@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'search_screen.dart';
+import 'home_screen.dart';
 import 'reading_screen.dart';
 import 'reading_progress_screen.dart';
 import 'bookmarks_screen.dart';
@@ -16,8 +16,9 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   int _currentIndex = 0;
 
+  // 찾기 탭 = AI 감정 검색(HomeScreen). 키워드 검색은 성경 탭 헤더 돋보기로 접근.
   final _screens = const [
-    SearchScreen(),
+    HomeScreen(),
     ReadingScreen(),
     ReadingProgressScreen(),
     BookmarksScreen(),

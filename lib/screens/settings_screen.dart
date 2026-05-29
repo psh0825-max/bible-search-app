@@ -121,9 +121,11 @@ class SettingsScreen extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _kv('엔진', 'Google Cloud TTS (Chirp 3 HD)'),
+                  _kv('엔진', 'Google Cloud TTS (Wavenet)'),
                   const SizedBox(height: 4),
-                  _kv('언어', '한국어 · ko-KR-Chirp3-HD-Leda'),
+                  _kv('음성', '한국어 · ko-KR-Wavenet-A'),
+                  const SizedBox(height: 4),
+                  _kv('캐시', '같은 구절 두 번째부터 오프라인'),
                   const SizedBox(height: 10),
                   Text(
                     '오프라인에서는 기기 기본 음성으로 자동 전환돼요.',
