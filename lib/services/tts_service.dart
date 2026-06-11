@@ -1,19 +1,20 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
+import '../config/api_keys.dart';
 
 /// Bible verse 낭독 서비스.
 ///
 /// 1차: Google Cloud TTS — Wavenet 보이스 (Chirp 3 HD 대비 ~53% 저렴, 체감 음질 차이 미미).
-/// 2차: 기기 내장 flutter_tts (오프라인 / 네트워크 실패 fallback).
+/// 2차: 기기 내장 flutter_tts (오프라인 / 네트워크 실패 / API 키 미설정 fallback).
 ///
 /// 같은 텍스트는 디스크에 mp3로 캐시 → 두 번째 재생부터 API 비용 0.
 class TtsService {
-  static const String _apiKey = 'AIzaSyDgl1Ww5YqcFUBYzS36toESraEcxM9ipVA';
   static const String _endpoint =
       'https://texttospeech.googleapis.com/v1/text:synthesize';
 
@@ -21,14 +22,17 @@ class TtsService {
   static const String _voiceName = 'ko-KR-Wavenet-A';
 
   static final AudioPlayer _player = AudioPlayer();
-  static bool _isPlaying = false;
+  static StreamSubscription<void>? _completeSub;
 
   static final FlutterTts _nativeTts = FlutterTts();
   static bool _nativeInitialized = false;
 
   static Directory? _cacheDir;
 
-  static bool get isSpeaking => _isPlaying;
+  /// 재생 상태 — UI에서 ValueListenableBuilder로 구독해 버튼 토글에 사용.
+  static final ValueNotifier<bool> speaking = ValueNotifier(false);
+
+  static bool get isSpeaking => speaking.value;
 
   // 절 앞의 [1절] 같은 마커 제거.
   static String _cleanText(String text) {
@@ -56,12 +60,16 @@ class TtsService {
 
     await stop();
 
+    if (!ApiKeys.hasCloudTts) {
+      await _speakWithNativeTts(cleanText);
+      return;
+    }
+
     try {
       await _speakWithCloudTts(cleanText);
     } catch (e) {
       // 네트워크/API 실패 → 기기 내장 TTS로 fallback.
-      // ignore: avoid_print
-      print('Cloud TTS failed, falling back to native: $e');
+      debugPrint('Cloud TTS failed, falling back to native: $e');
       await _speakWithNativeTts(cleanText);
     }
   }
@@ -77,7 +85,7 @@ class TtsService {
 
     final response = await http
         .post(
-          Uri.parse('$_endpoint?key=$_apiKey'),
+          Uri.parse('$_endpoint?key=${ApiKeys.cloudTts}'),
           headers: {'Content-Type': 'application/json'},
           body: json.encode({
             'input': {'text': text},
@@ -109,8 +117,9 @@ class TtsService {
   }
 
   static Future<void> _playFile(File file) async {
-    _isPlaying = true;
-    _player.onPlayerComplete.listen((_) => _isPlaying = false);
+    speaking.value = true;
+    _completeSub ??=
+        _player.onPlayerComplete.listen((_) => speaking.value = false);
     await _player.play(DeviceFileSource(file.path));
   }
 
@@ -120,19 +129,19 @@ class TtsService {
       await _nativeTts.setSpeechRate(0.5);
       await _nativeTts.setVolume(1.0);
       await _nativeTts.setPitch(1.0);
-      _nativeTts.setStartHandler(() => _isPlaying = true);
-      _nativeTts.setCompletionHandler(() => _isPlaying = false);
-      _nativeTts.setCancelHandler(() => _isPlaying = false);
-      _nativeTts.setErrorHandler((msg) => _isPlaying = false);
+      _nativeTts.setStartHandler(() => speaking.value = true);
+      _nativeTts.setCompletionHandler(() => speaking.value = false);
+      _nativeTts.setCancelHandler(() => speaking.value = false);
+      _nativeTts.setErrorHandler((msg) => speaking.value = false);
       _nativeInitialized = true;
     }
-    _isPlaying = true;
+    speaking.value = true;
     await _nativeTts.speak(text);
   }
 
   static Future<void> stop() async {
     await _player.stop();
     await _nativeTts.stop();
-    _isPlaying = false;
+    speaking.value = false;
   }
 }

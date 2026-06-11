@@ -52,7 +52,7 @@ class BookmarksScreen extends ConsumerWidget {
                           color: AppConstants.accentSoft,
                           borderRadius: BorderRadius.circular(999),
                           border: Border.all(
-                            color: AppConstants.accent.withOpacity(0.5),
+                            color: AppConstants.accent.withValues(alpha: 0.5),
                             width: 0.6,
                           ),
                         ),
@@ -83,10 +83,10 @@ class BookmarksScreen extends ConsumerWidget {
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
                               color:
-                                  AppConstants.accent.withOpacity(0.12),
+                                  AppConstants.accent.withValues(alpha: 0.12),
                               border: Border.all(
                                 color:
-                                    AppConstants.accent.withOpacity(0.3),
+                                    AppConstants.accent.withValues(alpha: 0.3),
                                 width: 0.8,
                               ),
                             ),
@@ -135,7 +135,7 @@ class BookmarksScreen extends ConsumerWidget {
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(20),
                               color:
-                                  AppConstants.danger.withOpacity(0.18),
+                                  AppConstants.danger.withValues(alpha: 0.18),
                             ),
                             child: const Icon(
                               Icons.delete_outline,
@@ -205,7 +205,7 @@ class BookmarksScreen extends ConsumerWidget {
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(20),
                                 color: AppConstants.bgCard
-                                    .withOpacity(0.82),
+                                    .withValues(alpha: 0.82),
                                 border: Border.all(
                                   color: AppConstants.border,
                                   width: 0.6,
@@ -224,10 +224,10 @@ class BookmarksScreen extends ConsumerWidget {
                                           decoration: BoxDecoration(
                                             shape: BoxShape.circle,
                                             color: moodColor
-                                                .withOpacity(0.2),
+                                                .withValues(alpha: 0.2),
                                             border: Border.all(
                                               color: moodColor
-                                                  .withOpacity(0.5),
+                                                  .withValues(alpha: 0.5),
                                               width: 0.6,
                                             ),
                                           ),
@@ -291,7 +291,7 @@ class BookmarksScreen extends ConsumerWidget {
                                         borderRadius:
                                             BorderRadius.circular(12),
                                         color: AppConstants.bgCardLight
-                                            .withOpacity(0.55),
+                                            .withValues(alpha: 0.55),
                                         border: Border.all(
                                           color: AppConstants.border,
                                           width: 0.6,

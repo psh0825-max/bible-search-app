@@ -1,5 +1,8 @@
+import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'package:http/http.dart' as http;
+import '../config/api_keys.dart';
 import '../config/constants.dart';
 import '../models/verse.dart';
 import 'bible_db_service.dart';
@@ -32,27 +35,41 @@ class GeminiService {
     final directResults = _tryDirectLookup(query);
     if (directResults != null) return directResults;
 
-    final url = Uri.parse(
-        '${AppConstants.geminiBaseUrl}/models/${AppConstants.geminiModel}:generateContent?key=${AppConstants.geminiApiKey}');
+    if (!ApiKeys.hasGemini) {
+      throw Exception(
+          'AI 검색이 아직 준비되지 않았어요.\n성경 탭의 키워드 검색을 이용해 주세요.');
+    }
 
-    final response = await http.post(
-      url,
-      headers: {'Content-Type': 'application/json'},
-      body: json.encode({
-        'contents': [
-          {
-            'role': 'user',
-            'parts': [
-              {'text': '$_systemPrompt\n\n사용자의 마음: "$query"'}
-            ]
-          }
-        ],
-        'generationConfig': {
-          'temperature': 0.7,
-          'maxOutputTokens': 2000,
-        }
-      }),
-    );
+    final url = Uri.parse(
+        '${AppConstants.geminiBaseUrl}/models/${AppConstants.geminiModel}:generateContent?key=${ApiKeys.gemini}');
+
+    final http.Response response;
+    try {
+      response = await http
+          .post(
+            url,
+            headers: {'Content-Type': 'application/json'},
+            body: json.encode({
+              'contents': [
+                {
+                  'role': 'user',
+                  'parts': [
+                    {'text': '$_systemPrompt\n\n사용자의 마음: "$query"'}
+                  ]
+                }
+              ],
+              'generationConfig': {
+                'temperature': 0.7,
+                'maxOutputTokens': 2000,
+              }
+            }),
+          )
+          .timeout(const Duration(seconds: 30));
+    } on SocketException {
+      throw Exception('인터넷 연결을 확인해 주세요.\n성경 읽기와 키워드 검색은 오프라인에서도 돼요.');
+    } on TimeoutException {
+      throw Exception('응답이 너무 오래 걸려요.\n잠시 후 다시 시도해 주세요.');
+    }
 
     if (response.statusCode != 200) {
       throw Exception('AI 서비스 오류가 발생했습니다');

@@ -5,16 +5,24 @@ plugins {
     id "dev.flutter.flutter-gradle-plugin"
 }
 
+// 릴리즈 keystore 정보는 android/key.properties 에서 읽는다 (git에는 커밋하지 않음).
+// 파일이 없으면 디버그 키로 서명해 개발 빌드는 그대로 동작한다.
+def keystoreProperties = new Properties()
+def keystorePropertiesFile = rootProject.file('key.properties')
+if (keystorePropertiesFile.exists()) {
+    keystorePropertiesFile.withReader('UTF-8') { reader ->
+        keystoreProperties.load(reader)
+    }
+}
+
 android {
-    namespace = "com.example.bible_search_app"
+    namespace = "com.lightonplus.biblesearch"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
-        // flutter_local_notifications requires core library desugaring on Android < 8.0 (API 26).
-        coreLibraryDesugaringEnabled = true
     }
 
     kotlinOptions {
@@ -22,25 +30,38 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.example.bible_search_app"
+        applicationId = "com.lightonplus.biblesearch"
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
-        // Vector drawables for older Android versions.
         multiDexEnabled = true
+    }
+
+    signingConfigs {
+        if (keystorePropertiesFile.exists()) {
+            release {
+                keyAlias = keystoreProperties['keyAlias']
+                keyPassword = keystoreProperties['keyPassword']
+                storeFile = file(keystoreProperties['storeFile'])
+                storePassword = keystoreProperties['storePassword']
+            }
+        }
     }
 
     buildTypes {
         release {
-            // 디버그 키로 임시 서명 — Play 출시 단계에서 정식 keystore로 교체.
-            signingConfig = signingConfigs.debug
+            signingConfig = keystorePropertiesFile.exists()
+                    ? signingConfigs.release
+                    : signingConfigs.debug
+
+            // 코드/리소스 축소 — 앱 크기와 콜드 스타트 개선.
+            minifyEnabled = true
+            shrinkResources = true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'),
+                    'proguard-rules.pro'
         }
     }
-}
-
-dependencies {
-    coreLibraryDesugaring "com.android.tools:desugar_jdk_libs:2.1.4"
 }
 
 flutter {

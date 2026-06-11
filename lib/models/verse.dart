@@ -36,6 +36,6 @@ class Verse {
     final chapter = match.group(2)!;
     final versesPart = match.group(3)!;
     final unit = book == '시편' ? '편' : '장';
-    return '$book $chapter$unit ${versesPart}절';
+    return '$book $chapter$unit $versesPart절';
   }
 }

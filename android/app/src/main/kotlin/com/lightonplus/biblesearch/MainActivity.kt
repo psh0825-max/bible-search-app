@@ -1,4 +1,4 @@
-package com.example.bible_search_app
+package com.lightonplus.biblesearch
 
 import io.flutter.embedding.android.FlutterActivity
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:share_plus/share_plus.dart';
 import '../config/constants.dart';
@@ -70,7 +71,7 @@ class _VerseCardState extends ConsumerState<VerseCard>
           child: Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(24),
-              color: AppConstants.bgCard.withOpacity(0.85),
+              color: AppConstants.bgCard.withValues(alpha: 0.85),
               border: Border.all(
                 color: AppConstants.border,
                 width: 0.6,
@@ -100,9 +101,9 @@ class _VerseCardState extends ConsumerState<VerseCard>
                         height: 34,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: moodColor.withOpacity(0.18),
+                          color: moodColor.withValues(alpha: 0.18),
                           border: Border.all(
-                            color: moodColor.withOpacity(0.45),
+                            color: moodColor.withValues(alpha: 0.45),
                             width: 0.8,
                           ),
                         ),
@@ -164,7 +165,7 @@ class _VerseCardState extends ConsumerState<VerseCard>
                     padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(14),
-                      color: AppConstants.bgCardLight.withOpacity(0.65),
+                      color: AppConstants.bgCardLight.withValues(alpha: 0.65),
                       border: Border.all(
                         color: AppConstants.border,
                         width: 0.6,
@@ -181,7 +182,7 @@ class _VerseCardState extends ConsumerState<VerseCard>
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
                                 color:
-                                    AppConstants.accent.withOpacity(0.2),
+                                    AppConstants.accent.withValues(alpha: 0.2),
                               ),
                               child: const Center(
                                 child: Text(
@@ -199,7 +200,7 @@ class _VerseCardState extends ConsumerState<VerseCard>
                               '이 말씀이 닿는 이유',
                               style: TextStyle(
                                 color: AppConstants.accent
-                                    .withOpacity(0.95),
+                                    .withValues(alpha: 0.95),
                                 fontSize: 11.5,
                                 fontWeight: FontWeight.w700,
                                 letterSpacing: 0.1,
@@ -226,10 +227,23 @@ class _VerseCardState extends ConsumerState<VerseCard>
                 // 액션 — 부드러운 fill pill
                 Row(
                   children: [
-                    _ActionButton(
-                      icon: Icons.volume_up_outlined,
-                      label: '듣기',
-                      onTap: () => TtsService.speak(verse.text),
+                    ValueListenableBuilder<bool>(
+                      valueListenable: TtsService.speaking,
+                      builder: (context, speaking, _) => _ActionButton(
+                        icon: speaking
+                            ? Icons.stop
+                            : Icons.volume_up_outlined,
+                        label: speaking ? '정지' : '듣기',
+                        isActive: speaking,
+                        onTap: () {
+                          HapticFeedback.lightImpact();
+                          if (speaking) {
+                            TtsService.stop();
+                          } else {
+                            TtsService.speak(verse.text);
+                          }
+                        },
+                      ),
                     ),
                     const SizedBox(width: 8),
                     _ActionButton(
@@ -240,6 +254,7 @@ class _VerseCardState extends ConsumerState<VerseCard>
                       isActive: isBookmarked,
                       onTap: () {
                         if (isBookmarked) return;
+                        HapticFeedback.lightImpact();
                         ref
                             .read(bookmarkProvider.notifier)
                             .addBookmark(
@@ -261,6 +276,7 @@ class _VerseCardState extends ConsumerState<VerseCard>
                       icon: Icons.ios_share,
                       label: '공유',
                       onTap: () {
+                        HapticFeedback.lightImpact();
                         Share.share(
                           '${verse.formattedReference}\n\n${verse.text}'
                           '\n\n— ${AppConstants.appName}',
@@ -286,7 +302,7 @@ class _VerseCardState extends ConsumerState<VerseCard>
   void _showNoteDialog(BuildContext context, WidgetRef ref) {
     final noteController = TextEditingController();
 
-    showDialog(
+    showDialog<void>(
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: AppConstants.bgCard,
@@ -350,7 +366,7 @@ class _VerseCardState extends ConsumerState<VerseCard>
           ),
         ],
       ),
-    );
+    ).then((_) => noteController.dispose());
   }
 }
 
@@ -382,10 +398,10 @@ class _ActionButton extends StatelessWidget {
           borderRadius: BorderRadius.circular(999),
           color: isActive
               ? AppConstants.accentSoft
-              : AppConstants.bgCardLight.withOpacity(0.55),
+              : AppConstants.bgCardLight.withValues(alpha: 0.55),
           border: Border.all(
             color: isActive
-                ? AppConstants.accent.withOpacity(0.7)
+                ? AppConstants.accent.withValues(alpha: 0.7)
                 : AppConstants.border,
             width: 0.6,
           ),

@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:share_plus/share_plus.dart';
 import '../config/constants.dart';
 import '../config/theme.dart';
+import '../providers/bible_provider.dart';
+import '../providers/bookmark_provider.dart';
 import '../providers/search_provider.dart';
 import '../services/speech_service.dart';
 import '../widgets/verse_card.dart';
@@ -44,11 +48,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
 
   void _submit(String query) {
     if (query.trim().isEmpty) return;
+    HapticFeedback.lightImpact();
     FocusScope.of(context).unfocus();
     ref.read(searchProvider.notifier).search(query.trim());
   }
 
   Future<void> _toggleMic() async {
+    HapticFeedback.lightImpact();
     if (_isListening) {
       await SpeechService.stopListening();
       setState(() => _isListening = false);
@@ -152,7 +158,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                             _greeting(),
                             style: TextStyle(
                               color:
-                                  AppConstants.textSecondary.withOpacity(0.95),
+                                  AppConstants.textSecondary.withValues(alpha: 0.95),
                               fontSize: 13.5,
                               letterSpacing: -0.1,
                             ),
@@ -203,6 +209,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                               emoji: emoji,
                               label: _shorten(suggestion),
                               onTap: () {
+                                HapticFeedback.selectionClick();
                                 _controller.text = suggestion;
                                 _submit(suggestion);
                               },
@@ -241,10 +248,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                           padding: const EdgeInsets.all(20),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(20),
-                            color: AppConstants.danger.withOpacity(0.1),
+                            color: AppConstants.danger.withValues(alpha: 0.1),
                             border: Border.all(
                               color:
-                                  AppConstants.danger.withOpacity(0.35),
+                                  AppConstants.danger.withValues(alpha: 0.35),
                               width: 0.6,
                             ),
                           ),
@@ -289,13 +296,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                       ),
                     ),
 
-                  // 초기 — 따뜻한 안내
+                  // 초기 — 오늘의 말씀 + 따뜻한 안내
                   if (searchState.status == SearchStatus.idle)
                     SliverToBoxAdapter(
                       child: Padding(
                         padding:
-                            EdgeInsets.fromLTRB(24, 36, 24, bottomPadding),
-                        child: _IdleHint(),
+                            EdgeInsets.fromLTRB(20, 6, 20, bottomPadding),
+                        child: Column(
+                          children: [
+                            const _DailyVerseCard(),
+                            const SizedBox(height: 34),
+                            _IdleHint(),
+                          ],
+                        ),
                       ),
                     ),
                 ],
@@ -350,7 +363,7 @@ class _SearchInput extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(22),
-          color: AppConstants.bgCard.withOpacity(0.86),
+          color: AppConstants.bgCard.withValues(alpha: 0.86),
           border: Border.all(
             color: AppConstants.border,
             width: 0.6,
@@ -370,7 +383,7 @@ class _SearchInput extends StatelessWidget {
                 decoration: InputDecoration(
                   hintText: '예. 마음이 너무 무거워요…',
                   hintStyle: TextStyle(
-                    color: AppConstants.textDim.withOpacity(0.95),
+                    color: AppConstants.textDim.withValues(alpha: 0.95),
                   ),
                   border: InputBorder.none,
                   enabledBorder: InputBorder.none,
@@ -397,8 +410,8 @@ class _SearchInput extends StatelessWidget {
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: isListening
-                      ? AppConstants.accent.withOpacity(0.18)
-                      : AppConstants.bgCardLight.withOpacity(0.6),
+                      ? AppConstants.accent.withValues(alpha: 0.18)
+                      : AppConstants.bgCardLight.withValues(alpha: 0.6),
                   border: Border.all(
                     color: isListening
                         ? AppConstants.accent
@@ -434,7 +447,7 @@ class _SearchInput extends StatelessWidget {
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: AppConstants.accent.withOpacity(0.35),
+                      color: AppConstants.accent.withValues(alpha: 0.35),
                       blurRadius: 14,
                       offset: const Offset(0, 4),
                     ),
@@ -445,6 +458,188 @@ class _SearchInput extends StatelessWidget {
                   color: AppConstants.onAccent,
                   size: 20,
                 ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// 오늘의 말씀 — 검색 전 빈 화면 대신 매일 다른 구절을 보여준다.
+class _DailyVerseCard extends ConsumerWidget {
+  const _DailyVerseCard();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final dailyAsync = ref.watch(dailyVerseProvider);
+    final verse = dailyAsync.valueOrNull;
+    if (verse == null) return const SizedBox.shrink();
+
+    final isBookmarked =
+        ref.watch(bookmarkProvider).any((b) => b.reference == verse.reference);
+
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: softShadow(opacity: 0.3),
+      ),
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.fromLTRB(22, 22, 22, 18),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(24),
+          color: AppConstants.bgCard.withValues(alpha: 0.85),
+          border: Border.all(
+            color: AppConstants.accent.withValues(alpha: 0.3),
+            width: 0.7,
+          ),
+          gradient: const LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              Color(0x26F2A88F),
+              Color(0x14B5A8E6),
+            ],
+          ),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  width: 26,
+                  height: 26,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: AppConstants.accent.withValues(alpha: 0.18),
+                  ),
+                  child: const Center(
+                    child: Text('🌅', style: TextStyle(fontSize: 13)),
+                  ),
+                ),
+                const SizedBox(width: 9),
+                Text(
+                  '오늘의 말씀',
+                  style: TextStyle(
+                    color: AppConstants.accent.withValues(alpha: 0.95),
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 0.2,
+                  ),
+                ),
+                const Spacer(),
+                Text(
+                  verse.formattedReference,
+                  style: const TextStyle(
+                    color: AppConstants.textDim,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Text(
+              verse.text,
+              style: AppTheme.scriptureText(
+                size: 16.5,
+                weight: FontWeight.w400,
+                color: AppConstants.textPrimary,
+                height: 1.95,
+              ),
+            ),
+            const SizedBox(height: 16),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                _DailyAction(
+                  icon: isBookmarked ? Icons.bookmark : Icons.bookmark_border,
+                  label: '저장',
+                  isActive: isBookmarked,
+                  onTap: () {
+                    if (isBookmarked) return;
+                    HapticFeedback.lightImpact();
+                    ref.read(bookmarkProvider.notifier).addBookmark(
+                          reference: verse.reference,
+                          text: verse.text,
+                        );
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('마음에 담아두었어요'),
+                        duration: Duration(seconds: 1),
+                      ),
+                    );
+                  },
+                ),
+                const SizedBox(width: 8),
+                _DailyAction(
+                  icon: Icons.ios_share,
+                  label: '공유',
+                  onTap: () {
+                    HapticFeedback.lightImpact();
+                    Share.share(
+                      '${verse.formattedReference}\n\n${verse.text}'
+                      '\n\n— ${AppConstants.appName}',
+                    );
+                  },
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _DailyAction extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final bool isActive;
+  final VoidCallback onTap;
+
+  const _DailyAction({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+    this.isActive = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final color =
+        isActive ? AppConstants.accentBright : AppConstants.textSecondary;
+    return GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(999),
+          color: isActive
+              ? AppConstants.accentSoft
+              : AppConstants.bgCardLight.withValues(alpha: 0.55),
+          border: Border.all(
+            color: isActive
+                ? AppConstants.accent.withValues(alpha: 0.7)
+                : AppConstants.border,
+            width: 0.6,
+          ),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 14, color: color),
+            const SizedBox(width: 5),
+            Text(
+              label,
+              style: TextStyle(
+                color: color,
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
               ),
             ),
           ],
@@ -474,7 +669,7 @@ class _IdleHint extends StatelessWidget {
               ],
             ),
             border: Border.all(
-              color: AppConstants.accent.withOpacity(0.4),
+              color: AppConstants.accent.withValues(alpha: 0.4),
               width: 0.8,
             ),
           ),
@@ -509,7 +704,7 @@ class _ShimmerCard extends StatelessWidget {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(22),
-        color: AppConstants.bgCard.withOpacity(0.65),
+        color: AppConstants.bgCard.withValues(alpha: 0.65),
         border: Border.all(color: AppConstants.border, width: 0.6),
       ),
       child: Column(
@@ -545,7 +740,7 @@ class _ShimmerCard extends StatelessWidget {
           height: height,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(radius),
-            color: AppConstants.bgCardLight.withOpacity(value),
+            color: AppConstants.bgCardLight.withValues(alpha: value),
           ),
         );
       },

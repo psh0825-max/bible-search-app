@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- "Dawn" 테마와 동일한 차콜 배경 — 스플래시/런처 아이콘에 사용 -->
+    <color name="splash_background">#16141C</color>
+    <color name="ic_launcher_background">#1F1B26</color>
+</resources>

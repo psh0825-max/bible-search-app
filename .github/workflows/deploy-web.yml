@@ -1,0 +1,53 @@
+name: Deploy web to GitHub Pages
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - run: flutter pub get
+
+      # GEMINI_API_KEY 시크릿이 없으면 AI 검색만 비활성화된 채 배포된다
+      # (성경 읽기·키워드 검색은 정상 동작).
+      # 웹에 키를 넣을 경우 Google Cloud에서 HTTP 리퍼러 제한을 꼭 걸 것.
+      - run: >
+          flutter build web --release
+          --base-href /bible-search-app/
+          --dart-define=GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}
+
+      - name: Add legal pages
+        run: cp docs/privacy.html docs/terms.html build/web/
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: build/web
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/bible_book.dart';
+import '../models/verse.dart';
 import '../services/bible_db_service.dart';
 
 // Books list provider — async로 DB 초기화 보장
@@ -50,8 +51,10 @@ final keywordSearchProvider = StateNotifierProvider<KeywordSearchNotifier,
   return KeywordSearchNotifier();
 });
 
-// Daily verse provider
-final dailyVerseProvider = Provider<Map<String, String>>((ref) {
+// Daily verse provider — 날짜 기반으로 선별된 구절을 본문과 함께 제공
+final dailyVerseProvider = FutureProvider<Verse?>((ref) async {
+  await BibleDbService.database; // DB 초기화 대기
+
   // Curated daily verse list
   final dailyVerses = [
     {'vl': 19, 'cn': 23, 'v': 1, 'end': 3},
@@ -92,13 +95,17 @@ final dailyVerseProvider = Provider<Map<String, String>>((ref) {
   final idx = dayOfYear % dailyVerses.length;
   final entry = dailyVerses[idx];
 
-  final bookName = BibleDbService.getBookName(entry['vl'] as int);
+  final vl = entry['vl'] as int;
+  final cn = entry['cn'] as int;
   final v = entry['v'] as int;
   final end = entry['end'] as int;
-  final cn = entry['cn'] as int;
-  final reference = v == end
-      ? '$bookName $cn:$v'
-      : '$bookName $cn:$v-$end';
 
-  return {'reference': reference, 'bookName': bookName, 'vl': '${entry['vl']}', 'cn': '$cn', 'v': '$v', 'end': '$end'};
+  final texts = await BibleDbService.getVerseTexts(vl, cn, v, end);
+  if (texts.isEmpty) return null;
+
+  final bookName = BibleDbService.getBookName(vl);
+  final reference =
+      v == end ? '$bookName $cn:$v' : '$bookName $cn:$v-$end';
+
+  return Verse(reference: reference, text: texts.join(' '));
 });

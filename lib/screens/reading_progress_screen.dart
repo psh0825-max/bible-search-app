@@ -22,7 +22,7 @@ class _ReadingProgressScreenState extends ConsumerState<ReadingProgressScreen> {
   @override
   Widget build(BuildContext context) {
     final bottomPadding = MediaQuery.of(context).padding.bottom + 80;
-    final books = (ref.watch(booksProvider).value ?? []);
+    final books = (ref.watch(booksProvider).valueOrNull ?? []);
     final settings = ref.watch(settingsProvider);
     final readChapters = settings.readChapters;
 
@@ -71,7 +71,7 @@ class _ReadingProgressScreenState extends ConsumerState<ReadingProgressScreen> {
   Widget _buildTopTabs() {
     return Container(
       decoration: BoxDecoration(
-        color: AppConstants.bgCard.withOpacity(0.7),
+        color: AppConstants.bgCard.withValues(alpha: 0.7),
         borderRadius: BorderRadius.circular(14),
         border: Border.all(color: AppConstants.border, width: 0.6),
       ),
@@ -175,7 +175,7 @@ class _ReadingProgressScreenState extends ConsumerState<ReadingProgressScreen> {
         padding: const EdgeInsets.fromLTRB(20, 18, 20, 18),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(22),
-          color: AppConstants.bgCard.withOpacity(0.82),
+          color: AppConstants.bgCard.withValues(alpha: 0.82),
           border: Border.all(color: AppConstants.border, width: 0.6),
           gradient: const LinearGradient(
             begin: Alignment.topLeft,
@@ -189,9 +189,9 @@ class _ReadingProgressScreenState extends ConsumerState<ReadingProgressScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const Text(
               '전체 진행률',
-              style: const TextStyle(
+              style: TextStyle(
                 color: AppConstants.textSecondary,
                 fontSize: 12.5,
                 fontWeight: FontWeight.w500,
@@ -203,7 +203,7 @@ class _ReadingProgressScreenState extends ConsumerState<ReadingProgressScreen> {
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Text(
-                  '${(totalProgress * 100).toStringAsFixed(0)}',
+                  (totalProgress * 100).toStringAsFixed(0),
                   style: const TextStyle(
                     color: AppConstants.textPrimary,
                     fontSize: 38,
@@ -245,7 +245,7 @@ class _ReadingProgressScreenState extends ConsumerState<ReadingProgressScreen> {
               ),
             ),
             const SizedBox(height: 20),
-            Divider(color: AppConstants.divider, height: 1),
+            const Divider(color: AppConstants.divider, height: 1),
             const SizedBox(height: 16),
             Row(
               children: [
@@ -330,7 +330,7 @@ class _ReadingProgressScreenState extends ConsumerState<ReadingProgressScreen> {
                   ],
                 )
               : null,
-          color: isSelected ? null : AppConstants.bgCard.withOpacity(0.65),
+          color: isSelected ? null : AppConstants.bgCard.withValues(alpha: 0.65),
           border: Border.all(
             color: isSelected ? Colors.transparent : AppConstants.border,
             width: 0.6,
@@ -370,7 +370,7 @@ class _ReadingProgressScreenState extends ConsumerState<ReadingProgressScreen> {
             margin: const EdgeInsets.only(bottom: 8),
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: AppConstants.bgCard.withOpacity(0.7),
+              color: AppConstants.bgCard.withValues(alpha: 0.7),
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
                 color: AppConstants.border,
@@ -431,7 +431,7 @@ class _ReadingProgressScreenState extends ConsumerState<ReadingProgressScreen> {
             margin: const EdgeInsets.only(bottom: 12),
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: AppConstants.bgPrimary.withOpacity(0.45),
+              color: AppConstants.bgPrimary.withValues(alpha: 0.45),
               borderRadius: BorderRadius.circular(16),
               border: Border.all(color: AppConstants.border, width: 0.6),
             ),
@@ -469,10 +469,10 @@ class _ReadingProgressScreenState extends ConsumerState<ReadingProgressScreen> {
               borderRadius: BorderRadius.circular(7),
               color: isRead
                   ? AppConstants.accentSoft
-                  : AppConstants.bgCard.withOpacity(0.4),
+                  : AppConstants.bgCard.withValues(alpha: 0.4),
               border: Border.all(
                 color: isRead
-                    ? AppConstants.accent.withOpacity(0.7)
+                    ? AppConstants.accent.withValues(alpha: 0.7)
                     : AppConstants.border,
                 width: 0.6,
               ),
@@ -508,9 +508,9 @@ class _ReadingProgressScreenState extends ConsumerState<ReadingProgressScreen> {
               height: 56,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: AppConstants.accent.withOpacity(0.12),
+                color: AppConstants.accent.withValues(alpha: 0.12),
                 border: Border.all(
-                  color: AppConstants.accent.withOpacity(0.3),
+                  color: AppConstants.accent.withValues(alpha: 0.3),
                   width: 0.8,
                 ),
               ),
