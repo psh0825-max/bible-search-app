@@ -1,13 +1,14 @@
 {
-    "name": "bible_search_app",
-    "short_name": "bible_search_app",
+    "name": "말씀찾기",
+    "short_name": "말씀찾기",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#16141C",
+    "theme_color": "#16141C",
+    "description": "AI가 마음에 맞는 성경 말씀을 찾아드려요. 성경 읽기 · 낭독 · 읽기 진도 · 북마크.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
+    "lang": "ko",
     "icons": [
         {
             "src": "icons/Icon-192.png",

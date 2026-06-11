@@ -65,11 +65,22 @@ flutter build appbundle --release \
 - 참고: 개역한글판(1961)은 저작권이 만료(2011년 말)되어 무료 사용 가능 —
   라이선스가 어려울 경우의 대안.
 
-### 4. 개인정보처리방침 호스팅 (GitHub Pages)
+### 4. 웹앱 배포 + 개인정보처리방침 (GitHub Pages)
 
-`docs/privacy.html`, `docs/terms.html`이 준비되어 있습니다. GitHub 저장소
-**Settings → Pages → Branch: master, 폴더: /docs** 로 활성화하면 앱 설정 화면의
-링크(`https://psh0825-max.github.io/bible-search-app/privacy.html`)가 살아납니다.
+`.github/workflows/deploy-web.yml`이 master 푸시 시 웹앱과 법적 문서를 함께
+GitHub Pages로 배포합니다. 최초 1회만 설정하면 됩니다:
+
+1. 저장소 **Settings → Pages → Source: GitHub Actions** 선택
+2. (선택) AI 검색을 웹에서도 쓰려면 **Settings → Secrets → Actions**에
+   `GEMINI_API_KEY` 추가 — 웹은 키가 노출되므로 Google Cloud에서
+   **HTTP 리퍼러 제한**(`https://psh0825-max.github.io/*`) 필수
+
+배포 주소:
+
+- 웹앱: `https://psh0825-max.github.io/bible-search-app/`
+  (검색엔진 색인 차단 `noindex` 적용 — 링크를 아는 사람만 접근하는 지인 공유용)
+- 개인정보처리방침: `https://psh0825-max.github.io/bible-search-app/privacy.html`
+- 이용약관: `https://psh0825-max.github.io/bible-search-app/terms.html`
 
 ### 5. Play Console 체크리스트
 

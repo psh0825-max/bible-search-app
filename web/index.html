@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="ko">
 <head>
   <!--
     If you are serving your web app in a path other than the root, change the
@@ -18,21 +18,76 @@
 
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="A new Flutter project.">
+  <meta name="description" content="AI가 마음에 맞는 성경 말씀을 찾아드려요. 성경 읽기 · 낭독 · 읽기 진도 · 북마크.">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#16141C">
+  <!-- 지인 한정 배포: 검색엔진 색인 차단 -->
+  <meta name="robots" content="noindex, nofollow">
 
   <!-- iOS meta tags & icons -->
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="bible_search_app">
+  <meta name="apple-mobile-web-app-title" content="말씀찾기">
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
 
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="favicon.png"/>
 
-  <title>bible_search_app</title>
+  <title>말씀찾기 — AI 성경 말씀 검색</title>
   <link rel="manifest" href="manifest.json">
+
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: #16141C;
+      height: 100%;
+    }
+    /* Flutter 첫 프레임 전까지 보여줄 로딩 화면 */
+    #loading {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 22px;
+      background: linear-gradient(180deg, #1F1B26 0%, #16141C 100%);
+      z-index: 9999;
+      transition: opacity .4s ease;
+    }
+    #loading img {
+      width: 96px;
+      height: 96px;
+      border-radius: 24px;
+      animation: pulse 1.6s ease-in-out infinite;
+    }
+    #loading p {
+      color: #C4BFCA;
+      font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+      font-size: 14px;
+      letter-spacing: -0.2px;
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(0.94); opacity: .75; }
+    }
+  </style>
 </head>
 <body>
+  <div id="loading">
+    <img src="icons/Icon-192.png" alt="말씀찾기">
+    <p>말씀을 준비하고 있어요…</p>
+  </div>
+  <script>
+    window.addEventListener('flutter-first-frame', function () {
+      var el = document.getElementById('loading');
+      if (el) {
+        el.style.opacity = '0';
+        setTimeout(function () { el.remove(); }, 450);
+      }
+    });
+  </script>
   <script src="flutter_bootstrap.js" async></script>
 </body>
 </html>
