@@ -1,0 +1,10 @@
+# 릴리즈 서명 설정 — 이 파일을 key.properties 로 복사한 뒤 값을 채우세요.
+# key.properties 와 keystore 파일은 절대 git에 커밋하지 마세요 (.gitignore에 이미 등록됨).
+#
+# keystore 생성:
+#   keytool -genkey -v -keystore upload-keystore.jks \
+#     -keyalg RSA -keysize 2048 -validity 10000 -alias upload
+storePassword=<keystore 비밀번호>
+keyPassword=<키 비밀번호>
+keyAlias=upload
+storeFile=<keystore 경로 (예: /Users/me/upload-keystore.jks)>

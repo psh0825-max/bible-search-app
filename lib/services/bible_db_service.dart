@@ -128,9 +128,10 @@ class BibleDbService {
 
   static Future<String?> getVerse(
       String bookName, int chapter, int verse) async {
+    // _nameToVl은 DB 초기화 시 채워지므로 조회 전에 초기화를 보장해야 한다.
+    final db = await database;
     final vl = _nameToVl[bookName];
     if (vl == null) return null;
-    final db = await database;
     final rows = await db.query(
       'verses',
       columns: ['text'],
@@ -143,9 +144,9 @@ class BibleDbService {
 
   static Future<String?> getVerseRange(
       String bookName, int chapter, int startVerse, int endVerse) async {
+    final db = await database;
     final vl = _nameToVl[bookName];
     if (vl == null) return null;
-    final db = await database;
     final rows = await db.query(
       'verses',
       columns: ['verse', 'text'],
@@ -159,6 +160,20 @@ class BibleDbService {
         .join('\n');
   }
 
+  /// 마커 없는 순수 본문 — 오늘의 말씀 카드 등 표시용.
+  static Future<List<String>> getVerseTexts(
+      int volume, int chapter, int startVerse, int endVerse) async {
+    final db = await database;
+    final rows = await db.query(
+      'verses',
+      columns: ['text'],
+      where: 'volume = ? AND chapter = ? AND verse >= ? AND verse <= ?',
+      whereArgs: [volume, chapter, startVerse, endVerse],
+      orderBy: 'verse ASC',
+    );
+    return rows.map((r) => r['text'] as String).toList();
+  }
+
   static Future<List<Map<String, dynamic>>> searchKeyword(
       String keyword, {int limit = 50}) async {
     if (keyword.trim().length < 2) return [];
@@ -168,6 +183,7 @@ class BibleDbService {
       FROM verses v
       JOIN books b ON b.volume = v.volume
       WHERE v.text LIKE ?
+      ORDER BY v.volume ASC, v.chapter ASC, v.verse ASC
       LIMIT ?
     ''', ['%${keyword.trim()}%', limit]);
 
@@ -192,7 +208,7 @@ class BibleDbService {
   static String getBookName(int volume) {
     final book = _books?.firstWhere(
       (b) => b.volume == volume,
-      orElse: () => BibleBook(
+      orElse: () => const BibleBook(
           volume: 0, name: '', abbr: '', chapterCount: 0, isOldTestament: true),
     );
     return book?.name ?? '';
@@ -202,7 +218,7 @@ class BibleDbService {
   static int getChapterCount(int volume) {
     final book = _books?.firstWhere(
       (b) => b.volume == volume,
-      orElse: () => BibleBook(
+      orElse: () => const BibleBook(
           volume: 0, name: '', abbr: '', chapterCount: 0, isOldTestament: true),
     );
     return book?.chapterCount ?? 0;

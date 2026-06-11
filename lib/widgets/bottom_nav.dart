@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../config/constants.dart';
 
 /// 부드러운 하단 탭 — 활성 시 코랄 톤 pill이 아이콘 뒤에 떠오름.
@@ -44,7 +45,7 @@ class BottomNav extends StatelessWidget {
         child: Container(
           padding: EdgeInsets.only(bottom: bottomPadding),
           decoration: BoxDecoration(
-            color: AppConstants.bgPrimary.withOpacity(0.88),
+            color: AppConstants.bgPrimary.withValues(alpha: 0.88),
             border: const Border(
               top: BorderSide(
                 color: AppConstants.border,
@@ -63,7 +64,12 @@ class BottomNav extends StatelessWidget {
                   final isSelected = index == currentIndex;
 
                   return GestureDetector(
-                    onTap: () => onTap(index),
+                    onTap: () {
+                      if (index != currentIndex) {
+                        HapticFeedback.selectionClick();
+                      }
+                      onTap(index);
+                    },
                     behavior: HitTestBehavior.opaque,
                     child: SizedBox(
                       width: 64,

@@ -39,10 +39,10 @@ class _MoodChipState extends State<MoodChip> {
           borderRadius: BorderRadius.circular(999),
           color: active
               ? AppConstants.accentSoft
-              : AppConstants.bgCard.withOpacity(0.85),
+              : AppConstants.bgCard.withValues(alpha: 0.85),
           border: Border.all(
             color: active
-                ? AppConstants.accent.withOpacity(0.7)
+                ? AppConstants.accent.withValues(alpha: 0.7)
                 : AppConstants.border,
             width: 0.7,
           ),

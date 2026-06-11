@@ -130,7 +130,7 @@ class SettingsScreen extends ConsumerWidget {
                   Text(
                     '오프라인에서는 기기 기본 음성으로 자동 전환돼요.',
                     style: TextStyle(
-                      color: AppConstants.textDim.withOpacity(0.85),
+                      color: AppConstants.textDim.withValues(alpha: 0.85),
                       fontSize: 12,
                       height: 1.5,
                     ),
@@ -151,7 +151,7 @@ class SettingsScreen extends ConsumerWidget {
                 padding: const EdgeInsets.fromLTRB(22, 26, 22, 22),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(22),
-                  color: AppConstants.bgCard.withOpacity(0.85),
+                  color: AppConstants.bgCard.withValues(alpha: 0.85),
                   border: Border.all(
                     color: AppConstants.border,
                     width: 0.6,
@@ -182,7 +182,7 @@ class SettingsScreen extends ConsumerWidget {
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color: AppConstants.accent.withOpacity(0.35),
+                            color: AppConstants.accent.withValues(alpha: 0.35),
                             blurRadius: 16,
                             offset: const Offset(0, 6),
                           ),
@@ -214,9 +214,9 @@ class SettingsScreen extends ConsumerWidget {
                     ),
                     const SizedBox(height: 14),
                     Text(
-                      'v1.0.0',
+                      'v${AppConstants.appVersion}',
                       style: TextStyle(
-                        color: AppConstants.textDim.withOpacity(0.95),
+                        color: AppConstants.textDim.withValues(alpha: 0.95),
                         fontSize: 11.5,
                       ),
                     ),
@@ -224,7 +224,7 @@ class SettingsScreen extends ConsumerWidget {
                     Text(
                       AppConstants.copyright,
                       style: TextStyle(
-                        color: AppConstants.textDim.withOpacity(0.7),
+                        color: AppConstants.textDim.withValues(alpha: 0.7),
                         fontSize: 11,
                       ),
                     ),
@@ -313,7 +313,7 @@ class _SettingsSection extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(20, 18, 20, 18),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(18),
-        color: AppConstants.bgCard.withOpacity(0.78),
+        color: AppConstants.bgCard.withValues(alpha: 0.78),
         border: Border.all(
           color: AppConstants.border,
           width: 0.6,
@@ -329,7 +329,7 @@ class _SettingsSection extends StatelessWidget {
                 height: 28,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: AppConstants.accent.withOpacity(0.15),
+                  color: AppConstants.accent.withValues(alpha: 0.15),
                 ),
                 child: Icon(icon,
                     color: AppConstants.accentBright, size: 14),
@@ -368,7 +368,7 @@ class _LinkTile extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
-          color: AppConstants.bgCard.withOpacity(0.65),
+          color: AppConstants.bgCard.withValues(alpha: 0.65),
           border: Border.all(
             color: AppConstants.border,
             width: 0.6,

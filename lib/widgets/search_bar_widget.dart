@@ -32,7 +32,7 @@ class SearchBarWidget extends StatelessWidget {
         child: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(999),
-            color: AppConstants.bgCard.withOpacity(0.78),
+            color: AppConstants.bgCard.withValues(alpha: 0.78),
             border: Border.all(
               color: AppConstants.border,
               width: 0.6,
@@ -57,7 +57,7 @@ class SearchBarWidget extends StatelessWidget {
                   decoration: InputDecoration(
                     hintText: hintText,
                     hintStyle: TextStyle(
-                      color: AppConstants.textDim.withOpacity(0.9),
+                      color: AppConstants.textDim.withValues(alpha: 0.9),
                     ),
                     border: InputBorder.none,
                     contentPadding:

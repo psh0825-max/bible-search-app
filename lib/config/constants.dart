@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 
 class AppConstants {
   static const String appName = '말씀찾기';
+  static const String appVersion = '1.0.0';
   static const String companyName = 'LightOn Plus Lab';
   static const String copyright = '© 2026 LightOn Plus Lab';
 
-  // Gemini API
-  static const String geminiApiKey = 'AIzaSyDgl1Ww5YqcFUBYzS36toESraEcxM9ipVA';
+  // Gemini API — 키는 lib/config/api_keys.dart 참고 (--dart-define 주입)
   static const String geminiModel = 'gemini-2.5-flash';
   static const String geminiBaseUrl =
       'https://generativelanguage.googleapis.com/v1beta';

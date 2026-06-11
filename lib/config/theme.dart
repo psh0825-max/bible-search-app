@@ -127,7 +127,7 @@ class AppTheme {
         iconTheme: const IconThemeData(color: AppConstants.textPrimary),
       ),
       navigationBarTheme: NavigationBarThemeData(
-        backgroundColor: AppConstants.bgPrimary.withOpacity(0.95),
+        backgroundColor: AppConstants.bgPrimary.withValues(alpha: 0.95),
         indicatorColor: AppConstants.accentSoft,
         labelTextStyle: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) {
@@ -146,7 +146,7 @@ class AppTheme {
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: AppConstants.bgCard.withOpacity(0.7),
+        fillColor: AppConstants.bgCard.withValues(alpha: 0.7),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
           borderSide: const BorderSide(color: AppConstants.border),
@@ -198,7 +198,7 @@ const BoxDecoration kAppBackground = BoxDecoration(
 /// 부드러운 카드 그림자 — hairline 대신 elevation으로 깊이감을 표현.
 List<BoxShadow> softShadow({double opacity = 0.28}) => [
       BoxShadow(
-        color: Colors.black.withOpacity(opacity),
+        color: Colors.black.withValues(alpha: opacity),
         blurRadius: 24,
         spreadRadius: -6,
         offset: const Offset(0, 12),

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
@@ -23,10 +24,8 @@ class SpeechService {
     }
 
     _available = await _speech.initialize(
-      // ignore: avoid_print
-      onError: (error) => print('Speech error: $error'),
-      // ignore: avoid_print
-      onStatus: (status) => print('Speech status: $status'),
+      onError: (error) => debugPrint('Speech error: $error'),
+      onStatus: (status) => debugPrint('Speech status: $status'),
     );
     _initialized = true;
     return _available;
@@ -45,8 +44,8 @@ class SpeechService {
       onResult: (SpeechRecognitionResult result) {
         onResult(result.recognizedWords, result.finalResult);
       },
-      localeId: 'ko_KR',
       listenOptions: SpeechListenOptions(
+        localeId: 'ko_KR',
         listenMode: ListenMode.dictation,
         cancelOnError: true,
         partialResults: true,
