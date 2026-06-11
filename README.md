@@ -52,15 +52,36 @@ flutter build appbundle --release \
 - 패키지명: `com.lightonplus.biblesearch`
 - 릴리즈 빌드는 R8 코드/리소스 축소가 켜져 있습니다 (`android/app/proguard-rules.pro`)
 
-### 3. Play Console 체크리스트
+### 3. ⚠️ 성경 본문 저작권 (출시 전 필수)
 
-- [ ] 앱 아이콘 512×512 — `store/play_store_icon_512.png` 사용 가능
-- [ ] 그래픽 이미지(피처 그래픽) 1024×500
-- [ ] 휴대전화 스크린샷 2장 이상
-- [ ] 개인정보처리방침 URL (설정 화면 링크와 동일하게: `https://lightonplus.com/privacy`)
+번들된 본문은 **성경전서 개역개정판**으로, 저작권이 (재)대한성서공회에 있습니다
+(업무상저작물, 공표 후 70년 → **2068년 말까지 보호**). 정식 출시 전에 반드시
+대한성서공회로부터 **디지털(모바일 앱) 사용 허가**를 받아야 합니다.
+
+- 문의처: 대한성서공회 <https://www.bskorea.or.kr> → 저작권 사용 허가 문의
+- 허가 범위에 포함할 것: ① 앱 내 전문 수록·검색·표시 ② TTS 낭독(음성 변환)
+  ③ 구절 공유 기능 ④ 무료 배포 여부
+- 라이선스 확보 전까지는 비공개 테스트 트랙까지만 사용하는 것을 권장합니다.
+- 참고: 개역한글판(1961)은 저작권이 만료(2011년 말)되어 무료 사용 가능 —
+  라이선스가 어려울 경우의 대안.
+
+### 4. 개인정보처리방침 호스팅 (GitHub Pages)
+
+`docs/privacy.html`, `docs/terms.html`이 준비되어 있습니다. GitHub 저장소
+**Settings → Pages → Branch: master, 폴더: /docs** 로 활성화하면 앱 설정 화면의
+링크(`https://psh0825-max.github.io/bible-search-app/privacy.html`)가 살아납니다.
+
+### 5. Play Console 체크리스트
+
+- [ ] **개역개정판 사용 허가 확보 (위 3번 — 블로커)**
+- [x] 앱 아이콘 512×512 — `store/play_store_icon_512.png`
+- [x] 피처 그래픽 1024×500 — `store/feature_graphic_1024x500.png`
+- [x] 휴대전화 스크린샷 7장 (1080×1920) — `store/screen_01.png` ~ `screen_07.png`
+- [ ] GitHub Pages 활성화 후 개인정보처리방침 URL 등록
 - [ ] 데이터 보안 양식 — 수집 데이터: 없음(검색어는 Gemini API로 전송되나 저장하지 않음을 명시),
       권한: 마이크(음성 검색), 인터넷
 - [ ] 콘텐츠 등급 설문
+- [ ] 개인 개발자 계정(2023.11 이후 생성)은 프로덕션 전 테스터 12명 × 14일 비공개 테스트 필요
 - [ ] 버전 올릴 때 `pubspec.yaml`의 `version`(예: `1.0.1+2`)과
       `lib/config/constants.dart`의 `appVersion`을 함께 갱신
 

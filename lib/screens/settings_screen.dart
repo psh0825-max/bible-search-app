@@ -228,6 +228,14 @@ class SettingsScreen extends ConsumerWidget {
                         fontSize: 11,
                       ),
                     ),
+                    const SizedBox(height: 8),
+                    Text(
+                      '${AppConstants.bibleVersion} ${AppConstants.bibleCopyright}',
+                      style: TextStyle(
+                        color: AppConstants.textDim.withValues(alpha: 0.7),
+                        fontSize: 11,
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -239,19 +247,19 @@ class SettingsScreen extends ConsumerWidget {
             _LinkTile(
               icon: Icons.description_outlined,
               title: '이용약관',
-              onTap: () => _launchUrl('https://lightonplus.com/terms'),
+              onTap: () => _launchUrl(AppConstants.termsUrl),
             ),
             const SizedBox(height: 8),
             _LinkTile(
               icon: Icons.privacy_tip_outlined,
               title: '개인정보처리방침',
-              onTap: () => _launchUrl('https://lightonplus.com/privacy'),
+              onTap: () => _launchUrl(AppConstants.privacyUrl),
             ),
             const SizedBox(height: 8),
             _LinkTile(
               icon: Icons.mail_outline,
               title: '문의하기',
-              onTap: () => _launchUrl('mailto:support@lightonplus.com'),
+              onTap: () => _launchUrl('mailto:${AppConstants.supportEmail}'),
             ),
           ],
         ),

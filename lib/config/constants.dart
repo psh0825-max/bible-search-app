@@ -6,6 +6,18 @@ class AppConstants {
   static const String companyName = 'LightOn Plus Lab';
   static const String copyright = '© 2026 LightOn Plus Lab';
 
+  // 성경 본문 판본 — 개역개정판은 대한성서공회 저작물이므로
+  // 정식 출시 전 사용 허가(라이선스) 확보가 필수다. README 참고.
+  static const String bibleVersion = '성경전서 개역개정판';
+  static const String bibleCopyright = 'ⓒ 대한성서공회';
+
+  // 링크 — GitHub Pages (Settings > Pages > master /docs 활성화 필요)
+  static const String privacyUrl =
+      'https://psh0825-max.github.io/bible-search-app/privacy.html';
+  static const String termsUrl =
+      'https://psh0825-max.github.io/bible-search-app/terms.html';
+  static const String supportEmail = 'psh0825@gmail.com';
+
   // Gemini API — 키는 lib/config/api_keys.dart 참고 (--dart-define 주입)
   static const String geminiModel = 'gemini-2.5-flash';
   static const String geminiBaseUrl =
